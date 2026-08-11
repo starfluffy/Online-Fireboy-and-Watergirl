@@ -1,28 +1,11 @@
-import { useContext } from "react";
-import PageHeader from "../components/layoutComponents/PageHeader.tsx";
 import GameCanvasArea from "../components/gameComponents/GameCanvasArea.tsx";
 import GameStatusBar from "../components/gameComponents/GameStatusBar.tsx";
-import WordSelection from "../components/gameComponents/WordSelection.tsx";
-import { GameStateContext } from "../context/GameStateContext.tsx";
 
 export default function GamePage() {
-  const { isSelectingWord, phrases, setWordToGuess, setIsSelectingWord } = useContext(GameStateContext);
-
   return (
-    <main className="page-shell">
-      <PageHeader backTo="/lobby">Game</PageHeader>
+    <main className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 flex flex-col items-center justify-center">
       <GameStatusBar />
-      {isSelectingWord ? (
-        <WordSelection
-          phrases={phrases}
-          onSelect={(phrase) => {
-            setWordToGuess(phrase);
-            setIsSelectingWord(false);
-          }}
-        />
-      ) : (
-        <GameCanvasArea />
-      )}
+      <GameCanvasArea />
     </main>
   );
 }

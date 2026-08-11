@@ -1,36 +1,23 @@
-type SocketListener = (...args: unknown[]) => void;
+import { io, Socket } from "socket.io-client";
 
-class MemorySocket {
-  private listeners = new Map<string, Set<SocketListener>>();
+const BACKEND_URL =
+  import.meta.env.VITE_BACKEND_URL ||
+  (typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : "http://localhost:3000");
 
-  on(event: string, listener: SocketListener) {
-    const current = this.listeners.get(event) ?? new Set<SocketListener>();
-    current.add(listener);
-    this.listeners.set(event, current);
-  }
+export const socket: Socket = io(BACKEND_URL, {
+  autoConnect: true,
+  transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionAttempts: 10,
+  reconnectionDelay: 1000,
+});
 
-  once(event: string, listener: SocketListener) {
-    const wrapper: SocketListener = (...args) => {
-      this.off(event, wrapper);
-      listener(...args);
-    };
-    this.on(event, wrapper);
-  }
+socket.on("connect", () => {
+  console.log("[Socket.io] Connected to server:", socket.id);
+});
 
-  off(event: string, listener?: SocketListener) {
-    if (!listener) {
-      this.listeners.delete(event);
-      return;
-    }
-
-    this.listeners.get(event)?.delete(listener);
-  }
-
-  emit(event: string, ...args: unknown[]) {
-    for (const listener of this.listeners.get(event) ?? []) {
-      listener(...args);
-    }
-  }
-}
-
-export const socket = new MemorySocket();
+socket.on("disconnect", (reason) => {
+  console.log("[Socket.io] Disconnected:", reason);
+});
