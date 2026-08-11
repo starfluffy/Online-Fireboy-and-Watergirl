@@ -13,12 +13,14 @@ import {
   LogOut,
   HelpCircle,
   Sparkles,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { currentUser, clearJwt } = useContext(AuthContext);
-  const { createRoom, joinRoom, setGameMode, setCurrentLevelIndex } = useContext(GameStateContext);
+  const { createRoom, joinRoom, setGameMode, setCurrentLevelIndex, socketConnected } = useContext(GameStateContext);
 
   const [joinCodeInput, setJoinCodeInput] = useState("");
   const [isCreating, setIsCreating] = useState(false);
@@ -85,9 +87,16 @@ export default function HomePage() {
               <h1 className="text-lg font-black tracking-tight text-slate-100">
                 FIREBOY & WATERGIRL
               </h1>
-              <p className="text-xs text-amber-400 font-semibold flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Online Multiplayer Temple
-              </p>
+              <div className="flex items-center gap-3 text-xs">
+                <p className="text-amber-400 font-semibold flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> Online Multiplayer
+                </p>
+                <span className="text-slate-600">•</span>
+                <span className={`font-mono flex items-center gap-1 ${socketConnected ? "text-emerald-400" : "text-rose-400 font-bold"}`}>
+                  {socketConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+                  {socketConnected ? "Server Online" : "Server Disconnected"}
+                </span>
+              </div>
             </div>
           </div>
 

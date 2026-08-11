@@ -1,21 +1,41 @@
 import { io, Socket } from "socket.io-client";
 
-const BACKEND_URL =
-  import.meta.env.VITE_BACKEND_URL ||
-  (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:3000`
-    : "http://localhost:3000");
+// Get backend URL from environment or localStorage override
+const getBackendUrl = (): string => {
+  if (import.meta.env.VITE_BACKEND_URL) {
+    return import.meta.env.VITE_BACKEND_URL;
+  }
 
-export const socket: Socket = io(BACKEND_URL, {
+  const savedBackend = localStorage.getItem("override_backend_url");
+  if (savedBackend) {
+    return savedBackend;
+  }
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    // If accessing on localhost
+    if (host === "localhost" || host === "127.0.0.1") {
+      return `http://${host}:3000`;
+    }
+  }
+
+  return "http://localhost:3000";
+};
+
+export const socket: Socket = io(getBackendUrl(), {
   autoConnect: true,
   transports: ["websocket", "polling"],
   reconnection: true,
-  reconnectionAttempts: 10,
+  reconnectionAttempts: 15,
   reconnectionDelay: 1000,
 });
 
 socket.on("connect", () => {
-  console.log("[Socket.io] Connected to server:", socket.id);
+  console.log("[Socket.io] Connected to backend server:", socket.io.opts.hostname, socket.id);
+});
+
+socket.on("connect_error", (err) => {
+  console.warn("[Socket.io] Connection error to backend server:", err.message);
 });
 
 socket.on("disconnect", (reason) => {
