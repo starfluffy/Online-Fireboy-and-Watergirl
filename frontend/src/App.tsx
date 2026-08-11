@@ -5,10 +5,8 @@ import LobbyPage from "./pages/LobbyPage.tsx";
 import GamePage from "./pages/GamePage.tsx";
 import LeaderboardPage from "./pages/LeaderboardPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
-import PodiumPage from "./pages/PodiumPage.tsx";
 import LoadingSpinner from "./components/layoutComponents/LoadingSpinner.tsx";
 import ProtectedRoute from "./services/ProtectedRoute.tsx";
-import { Progress } from "./types/types.ts";
 import { useJwtValidation } from "./hooks/useJwtValidation.ts";
 
 function App() {
@@ -36,7 +34,7 @@ function App() {
       <Route
         path="/lobby"
         element={
-          <ProtectedRoute requiredStep={Progress.HOME}>
+          <ProtectedRoute>
             <LobbyPage />
           </ProtectedRoute>
         }
@@ -44,7 +42,7 @@ function App() {
       <Route
         path="/play"
         element={
-          <ProtectedRoute requiredStep={Progress.LOBBY}>
+          <ProtectedRoute>
             <GamePage />
           </ProtectedRoute>
         }
@@ -62,14 +60,6 @@ function App() {
         element={
           <ProtectedRoute>
             <ProfilePage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/podium"
-        element={
-          <ProtectedRoute requiredStep={Progress.GAME}>
-            <PodiumPage />
           </ProtectedRoute>
         }
       />
